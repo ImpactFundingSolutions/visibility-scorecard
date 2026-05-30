@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nonprofit Visibility Scorecard — Impact Funding Solutions</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --rose: #C4896A;
+    --rose-light: #F5EBE5;
+    --rose-mid: #d9a088;
+    --dark: #1A1A1A;
+    --dark2: #2a2a2a;
+    --gray: #555;
+    --gray-light: #f7f7f5;
+    --border: rgba(0,0,0,0.1);
+    --white: #ffffff;
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body: 'DM Sans', sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: var(--font-body); background: #f4f0eb; color: var(--dark); min-height: 100vh; }
+
+  /* ── LAYOUT ── */
+  .page { max-width: 720px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+
+  /* ── HEADER ── */
+  .header { background: var(--dark); border-radius: 16px; padding: 2rem 2rem 1.75rem; margin-bottom: 2rem; position: relative; overflow: hidden; }
+  .header::before { content: ''; position: absolute; top: -40px; right: -40px; width: 200px; height: 200px; border-radius: 50%; background: rgba(196,137,106,0.12); }
+  .header::after { content: ''; position: absolute; bottom: -60px; left: 20px; width: 140px; height: 140px; border-radius: 50%; background: rgba(196,137,106,0.07); }
+  .header-logo { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; color: var(--white); letter-spacing: 0.02em; margin-bottom: 4px; }
+  .header-tagline { font-size: 0.7rem; font-weight: 500; letter-spacing: 0.18em; color: var(--rose); text-transform: uppercase; margin-bottom: 1.75rem; }
+  .header-title { font-family: var(--font-display); font-size: 1.9rem; font-weight: 700; color: var(--white); line-height: 1.2; margin-bottom: 0.5rem; }
+  .header-sub { font-size: 0.875rem; color: rgba(255,255,255,0.55); line-height: 1.6; max-width: 480px; }
+
+  /* ── PROGRESS ── */
+  .progress-wrap { margin-bottom: 1.75rem; }
+  .progress-info { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--gray); margin-bottom: 8px; font-weight: 500; }
+  .progress-track { height: 4px; background: rgba(0,0,0,0.1); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--rose); border-radius: 2px; transition: width 0.4s ease; }
+
+  /* ── CARDS ── */
+  .card { background: var(--white); border-radius: 16px; padding: 1.75rem; margin-bottom: 1.25rem; border: 0.5px solid rgba(0,0,0,0.06); }
+  .card-label { font-size: 0.65rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--rose); margin-bottom: 0.75rem; }
+  .card-title { font-family: var(--font-display); font-size: 1.2rem; font-weight: 600; color: var(--dark); line-height: 1.4; margin-bottom: 0.6rem; }
+  .card-desc { font-size: 0.85rem; color: var(--gray); line-height: 1.65; margin-bottom: 1.25rem; }
+
+  /* ── CONTACT FORM ── */
+  .field { margin-bottom: 1rem; }
+  .field label { display: block; font-size: 0.8rem; font-weight: 500; color: var(--gray); margin-bottom: 6px; letter-spacing: 0.02em; }
+  .field input { width: 100%; padding: 11px 14px; border: 1px solid rgba(0,0,0,0.12); border-radius: 10px; font-family: var(--font-body); font-size: 0.9rem; color: var(--dark); background: var(--gray-light); outline: none; transition: border-color 0.2s, background 0.2s; }
+  .field input:focus { border-color: var(--rose); background: var(--white); }
+  .field input::placeholder { color: #bbb; }
+
+  /* ── OPTIONS ── */
+  .options { display: flex; flex-direction: column; gap: 9px; }
+  .opt { display: flex; align-items: flex-start; gap: 12px; padding: 13px 14px; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; cursor: pointer; transition: all 0.18s; background: var(--gray-light); }
+  .opt:hover { border-color: var(--rose-mid); background: var(--white); transform: translateY(-1px); }
+  .opt.selected { border-color: var(--rose); background: var(--rose-light); }
+  .opt-radio { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid rgba(0,0,0,0.2); flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center; transition: all 0.18s; }
+  .opt.selected .opt-radio { border-color: var(--rose); background: var(--rose); }
+  .opt.selected .opt-radio::after { content: ''; width: 6px; height: 6px; background: white; border-radius: 50%; }
+  .opt-label { font-size: 0.875rem; color: var(--dark); line-height: 1.45; }
+
+  /* ── BUTTONS ── */
+  .btn-row { display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; gap: 1rem; }
+  .btn { padding: 11px 22px; border-radius: 10px; font-family: var(--font-body); font-size: 0.875rem; font-weight: 500; cursor: pointer; border: 1px solid rgba(0,0,0,0.15); background: transparent; color: var(--dark); transition: all 0.18s; letter-spacing: 0.01em; }
+  .btn:hover { background: var(--gray-light); transform: translateY(-1px); }
+  .btn-primary { background: var(--dark); color: white; border-color: var(--dark); }
+  .btn-primary:hover { background: #333; }
+  .btn-rose { background: var(--rose); color: white; border-color: var(--rose); }
+  .btn-rose:hover { background: #b07a5c; }
+  .btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+  .step-meta { font-size: 0.78rem; color: var(--gray); }
+
+  /* ── RESULTS ── */
+  .results { display: none; }
+  .score-hero { background: var(--dark); border-radius: 16px; padding: 2rem; margin-bottom: 1.25rem; position: relative; overflow: hidden; }
+  .score-hero::before { content: ''; position: absolute; top: -50px; right: -50px; width: 220px; height: 220px; border-radius: 50%; background: rgba(196,137,106,0.1); }
+  .score-report-label { font-size: 0.65rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--rose); margin-bottom: 0.5rem; }
+  .score-org { font-family: var(--font-display); font-size: 1.3rem; color: white; font-weight: 600; margin-bottom: 2px; }
+  .score-contact-info { font-size: 0.8rem; color: rgba(255,255,255,0.4); margin-bottom: 1.75rem; }
+  .scores-row { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1.75rem; }
+  .score-block { text-align: center; }
+  .score-num { font-family: var(--font-display); font-size: 4rem; font-weight: 700; line-height: 1; }
+  .score-sublabel { font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-top: 6px; }
+  .score-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.06em; margin-top: 8px; }
+  .score-arrow { font-size: 2rem; color: var(--rose); flex-shrink: 0; }
+  .score-max { font-size: 0.75rem; color: rgba(255,255,255,0.3); text-align: center; margin-top: -0.5rem; margin-bottom: 1.25rem; }
+  .dual-bar { margin-bottom: 10px; }
+  .dual-bar-row { display: flex; justify-content: space-between; font-size: 0.72rem; margin-bottom: 4px; }
+  .dual-track { height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
+  .dual-fill { height: 100%; border-radius: 4px; transition: width 1.2s cubic-bezier(0.4,0,0.2,1); width: 0; }
+
+  /* Category breakdown */
+  .section-title { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray); margin: 1.5rem 0 0.75rem; }
+  .cat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1.25rem; }
+  .cat-card { background: var(--white); border-radius: 12px; padding: 1rem; border: 0.5px solid rgba(0,0,0,0.08); }
+  .cat-name { font-size: 0.65rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rose); margin-bottom: 6px; }
+  .cat-scores { display: flex; align-items: baseline; gap: 4px; margin-bottom: 8px; }
+  .cat-cur { font-family: var(--font-display); font-size: 1.6rem; font-weight: 600; color: var(--dark); }
+  .cat-max { font-size: 0.8rem; color: #bbb; }
+  .cat-proj { font-size: 0.8rem; color: var(--rose); margin-left: auto; font-weight: 500; }
+  .cat-track { height: 4px; background: #f0f0f0; border-radius: 2px; margin-bottom: 3px; overflow: hidden; }
+  .cat-fill { height: 100%; border-radius: 2px; }
+
+  /* Gaps */
+  .gap-item { border-left: 3px solid var(--rose); border-radius: 0 12px 12px 0; background: var(--white); border-top: 0.5px solid rgba(0,0,0,0.08); border-right: 0.5px solid rgba(0,0,0,0.08); border-bottom: 0.5px solid rgba(0,0,0,0.08); padding: 1rem 1.1rem; margin-bottom: 8px; }
+  .gap-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
+  .gap-name { font-size: 0.9rem; font-weight: 500; color: var(--dark); }
+  .gap-pts { font-size: 0.75rem; font-weight: 600; color: var(--rose); background: var(--rose-light); padding: 2px 9px; border-radius: 20px; white-space: nowrap; }
+  .gap-desc { font-size: 0.82rem; color: var(--gray); line-height: 1.55; }
+
+  /* CTA */
+  .cta-band { background: var(--rose); border-radius: 16px; padding: 2rem; text-align: center; margin-top: 1.25rem; }
+  .cta-heading { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; color: white; margin-bottom: 0.6rem; }
+  .cta-body { font-size: 0.875rem; color: rgba(255,255,255,0.88); line-height: 1.65; margin-bottom: 1.25rem; max-width: 480px; margin-left: auto; margin-right: auto; }
+  .cta-contact { font-size: 0.85rem; color: rgba(255,255,255,0.75); margin-top: 0.75rem; }
+  .cta-contact strong { color: white; }
+
+  /* Print */
+  @media print {
+    body { background: white; }
+    .page { padding: 0.5rem; }
+    .btn-row, .print-actions { display: none !important; }
+    .assessment { display: none !important; }
+    .results { display: block !important; }
+    .header { border-radius: 8px; }
+    .score-hero, .cta-band { border-radius: 8px; }
+    .card { border-radius: 8px; break-inside: avoid; }
+  }
+
+  /* Animations */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeUp 0.4s ease forwards; }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="header">
+    <div class="header-logo">Impact Funding Solutions</div>
+    <div class="header-tagline">Structure · Strategy · Success</div>
+    <div class="header-title">Nonprofit Visibility<br>Scorecard</div>
+    <div class="header-sub">Discover where you stand today — and where you could be in 6 months with the right visibility strategy.</div>
+  </div>
+
+  <!-- ASSESSMENT -->
+  <div class="assessment" id="assessment">
+    <div class="progress-wrap">
+      <div class="progress-info">
+        <span id="stepLabel">Getting started</span>
+        <span id="stepCount">0%</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    </div>
+    <div id="stepContent" class="fade-in"></div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="results" id="results"></div>
+</div>
+
+<script>
+const ROSE = '#C4896A';
+const ROSE_LIGHT = '#F5EBE5';
+const DARK = '#1A1A1A';
+
+let contact = { name: '', org: '', email: '' };
+let step = 0;
+let answers = [];
+
+const questions = [
+  {
+    cat: 'Google Search Presence',
+    q: 'If someone searches your organization\'s name on Google, what appears?',
+    desc: 'Brand search visibility is the baseline. Donors, volunteers, and funders will search your name before they ever contact you.',
+    opts: [
+      { label: 'Our website appears as the top result', pts: 10, proj: 10 },
+      { label: 'We appear but not on the first page', pts: 5, proj: 10 },
+      { label: 'We are hard to find or don\'t show up', pts: 0, proj: 10 }
+    ],
+    gapDesc: 'Strengthening your domain authority and brand SEO ensures anyone searching your name finds you immediately — building trust before they even visit your site.'
+  },
+  {
+    cat: 'Google Search Presence',
+    q: 'If someone searches for your cause or programs (e.g. "youth mentorship Toronto"), do you appear?',
+    desc: 'Cause-based search is how new donors and volunteers who don\'t yet know your name discover organizations like yours.',
+    opts: [
+      { label: 'Yes — we show up on page 1 for our main keywords', pts: 15, proj: 15 },
+      { label: 'Sometimes, but inconsistently', pts: 7, proj: 15 },
+      { label: 'Rarely or never', pts: 0, proj: 13 }
+    ],
+    gapDesc: 'Targeted keyword strategy and optimized content positions your organization in front of people actively searching for your cause — your most motivated potential supporters.'
+  },
+  {
+    cat: 'Google Business Profile',
+    q: 'Do you have a verified, actively managed Google Business Profile?',
+    desc: 'A verified profile helps you appear in local search and on Google Maps — critical for community awareness and local donor discovery.',
+    opts: [
+      { label: 'Yes — fully set up and we post to it regularly', pts: 10, proj: 10 },
+      { label: 'Yes — but it is not actively managed', pts: 4, proj: 10 },
+      { label: 'We have one but aren\'t sure if it\'s verified', pts: 2, proj: 10 },
+      { label: 'No Google Business Profile', pts: 0, proj: 10 }
+    ],
+    gapDesc: 'An optimized, regularly updated Google Business Profile dramatically improves local visibility, community credibility, and your chances of appearing in the local "map pack" results.'
+  },
+  {
+    cat: 'Website Traffic',
+    q: 'Approximately how many visitors does your website receive per month?',
+    desc: 'Traffic volume directly determines how many people can discover your mission, donate, or volunteer — even with a great website, low traffic limits your reach.',
+    opts: [
+      { label: 'Over 5,000 visitors/month', pts: 15, proj: 15 },
+      { label: '1,000–5,000 visitors/month', pts: 10, proj: 15 },
+      { label: '200–1,000 visitors/month', pts: 5, proj: 13 },
+      { label: 'Under 200 visitors/month', pts: 0, proj: 10 }
+    ],
+    gapDesc: 'A multi-channel visibility strategy combining SEO, Google Ads Grant, and content marketing can grow monthly traffic significantly within 3–6 months — expanding your donor and volunteer reach.'
+  },
+  {
+    cat: 'Content & SEO',
+    q: 'How often does your organization publish blog posts or news updates on your website?',
+    desc: 'Fresh, optimized content signals authority to search engines and is the primary driver of AI visibility in tools like ChatGPT and Google\'s AI Overview.',
+    opts: [
+      { label: 'Weekly or more', pts: 15, proj: 15 },
+      { label: 'Monthly', pts: 8, proj: 15 },
+      { label: 'A few times a year', pts: 3, proj: 15 },
+      { label: 'Rarely or never', pts: 0, proj: 15 }
+    ],
+    gapDesc: 'One professionally written, SEO-optimized blog post per month is enough to build meaningful search authority, improve AI discoverability, and give your social channels consistent shareable content.'
+  },
+  {
+    cat: 'Google Ads Grant',
+    q: 'Does your nonprofit use the Google Ads Grant ($10,000/month in free ad spend)?',
+    desc: 'The Google Ads Grant gives eligible nonprofits $10,000/month in free Google advertising — most organizations either aren\'t using it or aren\'t getting its full value.',
+    opts: [
+      { label: 'Yes — actively managed and optimized', pts: 15, proj: 15 },
+      { label: 'Yes — but it\'s not actively managed', pts: 5, proj: 15 },
+      { label: 'We applied but weren\'t approved or it lapsed', pts: 2, proj: 15 },
+      { label: 'Not aware of it or haven\'t applied', pts: 0, proj: 15 }
+    ],
+    gapDesc: 'A properly managed Google Ads Grant drives free, targeted traffic to your donation page, volunteer sign-ups, events, and programs — this alone can transform your online fundraising results.'
+  },
+  {
+    cat: 'AI & Answer Engine Visibility',
+    q: 'If someone asked ChatGPT or Google\'s AI Overview about your cause area, would your org likely be mentioned?',
+    desc: 'AI-generated search results are now the fastest-growing discovery channel. Organizations with strong online authority and structured content are being recommended — others are invisible.',
+    opts: [
+      { label: 'Very likely — we have strong online authority', pts: 10, proj: 10 },
+      { label: 'Possibly, but we\'re not sure', pts: 4, proj: 10 },
+      { label: 'Unlikely — our online presence is limited', pts: 0, proj: 8 }
+    ],
+    gapDesc: 'Structured FAQ content, authority-building blog posts, and a strong online presence are the keys to appearing in AI-generated recommendations — an emerging channel your competitors haven\'t optimized for yet.'
+  },
+  {
+    cat: 'Fundraising Landing Page',
+    q: 'Does your website have a dedicated, optimized fundraising or donation landing page?',
+    desc: 'Traffic without conversion is wasted potential. A professionally structured donation page is what turns website visitors into actual donors.',
+    opts: [
+      { label: 'Yes — a dedicated page optimized for conversions', pts: 10, proj: 10 },
+      { label: 'We have a donate button but no dedicated page', pts: 4, proj: 10 },
+      { label: 'No dedicated online fundraising presence', pts: 0, proj: 10 }
+    ],
+    gapDesc: 'A professionally designed fundraising landing page with a clear story, impact metrics, and frictionless donation flow can dramatically improve the percentage of visitors who actually give.'
+  }
+];
+
+const TOTAL_STEPS = questions.length + 2;
+const MAX_PTS = questions.reduce((s, q) => s + Math.max(...q.opts.map(o => o.pts)), 0);
+
+function pct(n, d) { return Math.round(n / d * 100); }
+
+function updateProgress() {
+  const p = step === 0 ? 3 : step >= TOTAL_STEPS - 1 ? 100 : Math.round(step / (TOTAL_STEPS - 1) * 100);
+  document.getElementById('progressFill').style.width = p + '%';
+  document.getElementById('stepCount').textContent = p + '%';
+  if (step === 0) document.getElementById('stepLabel').textContent = 'Getting started';
+  else if (step <= questions.length) document.getElementById('stepLabel').textContent = 'Question ' + step + ' of ' + questions.length;
+  else document.getElementById('stepLabel').textContent = 'Almost done';
+}
+
+function render() {
+  updateProgress();
+  const c = document.getElementById('stepContent');
+  c.className = 'fade-in';
+  void c.offsetWidth;
+
+  if (step === 0) {
+    c.innerHTML = `
+      <div class="card">
+        <div class="card-label">Step 1 of ${TOTAL_STEPS} — Your details</div>
+        <div class="card-title">Let's personalize your visibility report</div>
+        <div class="card-desc">This assessment takes about 3 minutes. Your personalized score report will be ready instantly — and we'll follow up with recommendations tailored to your organization.</div>
+        <div class="field"><label>Your name</label><input type="text" id="cName" placeholder="Sarah Johnson" value="${contact.name}" autocomplete="name"></div>
+        <div class="field"><label>Organization name</label><input type="text" id="cOrg" placeholder="Hope Community Foundation" value="${contact.org}" autocomplete="organization"></div>
+        <div class="field"><label>Email address</label><input type="email" id="cEmail" placeholder="sarah@hopefoundation.org" value="${contact.email}" autocomplete="email"></div>
+      </div>
+      <div class="btn-row">
+        <span class="step-meta">Takes about 3 minutes</span>
+        <button class="btn btn-primary" onclick="submitContact()">Start assessment →</button>
+      </div>`;
+    return;
+  }
+
+  if (step >= 1 && step <= questions.length) {
+    const qi = step - 1;
+    const q = questions[qi];
+    const sel = answers[qi] !== undefined ? answers[qi] : null;
+    c.innerHTML = `
+      <div class="card">
+        <div class="card-label">${q.cat}</div>
+        <div class="card-title">${q.q}</div>
+        <div class="card-desc">${q.desc}</div>
+        <div class="options">
+          ${q.opts.map((o, i) => `
+            <div class="opt${sel === i ? ' selected' : ''}" onclick="pick(${qi},${i})" role="radio" aria-checked="${sel === i}" tabindex="0">
+              <div class="opt-radio"></div>
+              <div class="opt-label">${o.label}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn" onclick="back()">← Back</button>
+        <span class="step-meta">Question ${step} of ${questions.length}</span>
+        <button class="btn btn-primary" id="nxt" onclick="next()" ${sel === null ? 'disabled' : ''}>Continue →</button>
+      </div>`;
+    return;
+  }
+
+  if (step === questions.length + 1) {
+    const finalQ = [
+      'People don\'t know we exist',
+      'We get visitors but they don\'t donate',
+      'We struggle to recruit volunteers online',
+      'Grant funders can\'t find us online when vetting us',
+      'All of the above — we need full visibility'
+    ];
+    const sel = answers[questions.length] !== undefined ? answers[questions.length] : null;
+    c.innerHTML = `
+      <div class="card">
+        <div class="card-label">Final question</div>
+        <div class="card-title">What is your organization's biggest online visibility challenge?</div>
+        <div class="card-desc">This helps us prioritize your recommendations.</div>
+        <div class="options">
+          ${finalQ.map((l, i) => `
+            <div class="opt${sel === i ? ' selected' : ''}" onclick="pickFinal(${i})" role="radio" aria-checked="${sel === i}" tabindex="0">
+              <div class="opt-radio"></div>
+              <div class="opt-label">${l}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn" onclick="back()">← Back</button>
+        <button class="btn btn-rose" onclick="showResults()" ${sel === null ? 'disabled' : ''} id="showBtn">View my visibility score →</button>
+      </div>`;
+  }
+}
+
+function submitContact() {
+  const n = document.getElementById('cName').value.trim();
+  const o = document.getElementById('cOrg').value.trim();
+  const e = document.getElementById('cEmail').value.trim();
+  if (!n || !o || !e) { alert('Please complete all fields to continue.'); return; }
+  if (!e.includes('@')) { alert('Please enter a valid email address.'); return; }
+  contact = { name: n, org: o, email: e };
+  step = 1; render();
+}
+
+function pick(qi, i) {
+  answers[qi] = i;
+  render();
+}
+
+function pickFinal(i) {
+  answers[questions.length] = i;
+  render();
+}
+
+function next() {
+  step++; render();
+}
+
+function back() {
+  step--; render();
+}
+
+function calcScores() {
+  let cur = 0, proj = 0;
+  const cats = {};
+  questions.forEach((q, qi) => {
+    const sel = answers[qi];
+    if (sel === undefined) return;
+    const o = q.opts[sel];
+    cur += o.pts;
+    proj += o.proj;
+    if (!cats[q.cat]) cats[q.cat] = { cur: 0, proj: 0, max: 0 };
+    cats[q.cat].cur += o.pts;
+    cats[q.cat].proj += o.proj;
+    cats[q.cat].max += Math.max(...q.opts.map(x => x.pts));
+  });
+  return { cur, proj, cats };
+}
+
+function grade(score) {
+  const p = score / MAX_PTS * 100;
+  if (p >= 80) return { label: 'Strong', color: '#2d7a4f', bg: '#e8f5ee' };
+  if (p >= 60) return { label: 'Developing', color: '#C4896A', bg: '#F5EBE5' };
+  if (p >= 35) return { label: 'Emerging', color: '#b07a3a', bg: '#fdf1e4' };
+  return { label: 'Starting Out', color: '#888', bg: '#f0f0f0' };
+}
+
+function getGaps(scores) {
+  return questions.map((q, qi) => {
+    const sel = answers[qi];
+    if (sel === undefined) return null;
+    const o = q.opts[sel];
+    const max = Math.max(...q.opts.map(x => x.pts));
+    const gain = o.proj - o.pts;
+    if (o.pts >= max * 0.75 || gain === 0) return null;
+    return { name: q.cat, gain, desc: q.gapDesc };
+  }).filter(Boolean).sort((a, b) => b.gain - a.gain).slice(0, 4);
+}
+
+function showResults() {
+  const scores = calcScores();
+  const curG = grade(scores.cur);
+  const projG = grade(scores.proj);
+  const gaps = getGaps(scores);
+  const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  const curPct = pct(scores.cur, MAX_PTS);
+  const projPct = pct(scores.proj, MAX_PTS);
+  const catKeys = Object.keys(scores.cats);
+
+  document.getElementById('assessment').style.display = 'none';
+  const R = document.getElementById('results');
+  R.style.display = 'block';
+
+  R.innerHTML = `
+    <div style="font-size:0.72rem;color:#999;margin-bottom:1rem;font-weight:500;">Nonprofit Visibility Assessment · ${today}</div>
+
+    <div class="score-hero">
+      <div class="score-report-label">Visibility Score Report</div>
+      <div class="score-org">${contact.org}</div>
+      <div class="score-contact-info">${contact.name} &nbsp;·&nbsp; ${contact.email}</div>
+
+      <div class="scores-row">
+        <div class="score-block">
+          <div class="score-num" style="color:${curG.color}">${scores.cur}</div>
+          <div class="score-badge" style="background:${curG.color}22;color:${curG.color}">${curG.label}</div>
+          <div class="score-sublabel" style="margin-top:8px">Current score</div>
+        </div>
+        <div class="score-arrow">→</div>
+        <div class="score-block">
+          <div class="score-num" style="color:#C4896A">${scores.proj}</div>
+          <div class="score-badge" style="background:rgba(196,137,106,0.2);color:#C4896A">${projG.label}</div>
+          <div class="score-sublabel" style="margin-top:8px">Projected (6 months)</div>
+        </div>
+      </div>
+      <div class="score-max">Out of ${MAX_PTS} possible points</div>
+
+      <div class="dual-bar">
+        <div class="dual-bar-row"><span style="color:rgba(255,255,255,0.45)">Current visibility</span><span style="color:rgba(255,255,255,0.45)">${curPct}%</span></div>
+        <div class="dual-track"><div class="dual-fill" id="bCur" style="background:#666"></div></div>
+      </div>
+      <div class="dual-bar">
+        <div class="dual-bar-row"><span style="color:#C4896A">Projected with Impact Visibility</span><span style="color:#C4896A">${projPct}%</span></div>
+        <div class="dual-track"><div class="dual-fill" id="bProj" style="background:#C4896A"></div></div>
+      </div>
+    </div>
+
+    <div class="section-title">Score by category</div>
+    <div class="cat-grid">
+      ${catKeys.map(k => {
+        const d = scores.cats[k];
+        const cp = pct(d.cur, d.max);
+        const pp = pct(d.proj, d.max);
+        return `<div class="cat-card">
+          <div class="cat-name">${k}</div>
+          <div class="cat-scores">
+            <div class="cat-cur">${d.cur}</div>
+            <div class="cat-max">/ ${d.max}</div>
+            <div class="cat-proj">→ ${d.proj} pts</div>
+          </div>
+          <div class="cat-track"><div class="cat-fill" style="width:${cp}%;background:#ddd"></div></div>
+          <div class="cat-track"><div class="cat-fill" style="width:${pp}%;background:#C4896A"></div></div>
+        </div>`;
+      }).join('')}
+    </div>
+
+    ${gaps.length ? `
+    <div class="section-title">Your biggest visibility gaps</div>
+    ${gaps.map(g => `
+      <div class="gap-item">
+        <div class="gap-header">
+          <div class="gap-name">${g.name}</div>
+          <div class="gap-pts">+${g.gain} pts potential</div>
+        </div>
+        <div class="gap-desc">${g.desc}</div>
+      </div>`).join('')}` : ''}
+
+    <div class="cta-band">
+      <div class="cta-heading">Ready to close the gap?</div>
+      <div class="cta-body">The Impact Visibility Package is designed to address every gap identified in this report — SEO, content, Google Ads Grant management, AI visibility, and a dedicated fundraising landing page. All in one monthly retainer.</div>
+      <a href="https://www.impactfundingsolutions.com/impact-visibility-solutions/" style="display:inline-block;background:white;color:#C4896A;font-family:'DM Sans',sans-serif;font-weight:600;font-size:0.875rem;padding:12px 28px;border-radius:10px;text-decoration:none;margin-bottom:1rem;">Learn about the package →</a>
+      <div class="cta-contact">
+        <strong>impactfundingsolutions.com</strong> &nbsp;·&nbsp; info@impactfundingsolutions.com
+      </div>
+    </div>
+
+    <div class="btn-row print-actions" style="margin-top:1.5rem">
+      <button class="btn" onclick="retake()">← Retake assessment</button>
+      <button class="btn btn-primary" onclick="window.print()">🖨 Save / Print report</button>
+    </div>`;
+
+  setTimeout(() => {
+    const bc = document.getElementById('bCur');
+    const bp = document.getElementById('bProj');
+    if (bc) bc.style.width = curPct + '%';
+    if (bp) bp.style.width = projPct + '%';
+  }, 150);
+}
+
+function retake() {
+  step = 0; answers = [];
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('assessment').style.display = 'block';
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
